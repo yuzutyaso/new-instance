@@ -4,91 +4,139 @@
         <meta charset="utf-8">
         <link rel="icon" href="/img/logo/favicon.ico">
         <title>創世記</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
         <style>
             body {
-                margin: 0 auto;
-                font-family: sans-serif; /* Added a common font for better readability */
+                margin: 0;
+                font-family: 'Roboto', sans-serif;
+                background-color: #f4f7f6; /* Light background for the whole page */
+                color: #333;
             }
-            
+
             nav {
                 width: 100%;
                 height: 70px;
-                background-color: dimgray;
-                padding-top: 5px;
+                background-color: #2c3e50; /* Darker, modern navy blue */
+                padding: 0 20px; /* Padding for the nav content */
                 box-sizing: border-box;
+                display: flex; /* Use flexbox for nav items */
+                align-items: center; /* Vertically align items */
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
             }
-            
+
             nav ul {
                 display: flex;
-                margin: 0; /* Removed default ul margin */
-                padding: 0; /* Removed default ul padding */
-                align-items: center; /* Vertically align items in the nav */
-                height: 100%; /* Make ul take full height of nav */
-            }
-            
-            nav li {
+                margin: 0;
+                padding: 0;
                 list-style: none;
-                color: white;
-                font-size: 1.2em; /* Made nav title slightly larger */
-                margin-left: 20px; /* Added some left margin for the title */
+                width: 100%; /* Ensure ul takes full width to align content */
             }
-            
+
+            nav li {
+                color: #ecf0f1; /* Light gray for text */
+                font-size: 1.5em; /* Slightly larger and more prominent */
+                font-weight: 300; /* Lighter font weight for a modern look */
+            }
+
             a {
                 display: block;
                 text-decoration: none;
                 color: white;
-                margin-right: 35px;
+                margin-right: 35px; /* Keep consistent spacing for links if added later */
             }
-            
+
             main {
-                background-color: #fefefe;
-                padding: 20px; /* Added padding to main content */
-                max-width: 800px; /* Constrained main content width for better readability */
-                margin: 0 auto; /* Centered main content */
-                line-height: 1.6; /* Improved line spacing for paragraphs */
+                background-color: #ffffff; /* White background for main content */
+                padding: 40px; /* Increased padding */
+                max-width: 800px;
+                margin: 40px auto; /* Centered with top/bottom margin */
+                line-height: 1.8; /* Improved line spacing for paragraphs */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.05); /* Softer shadow for the main block */
+                border-radius: 8px; /* Slightly rounded corners */
             }
 
             h1 {
-                color: #333;
+                color: #2c3e50; /* Matches nav background for consistency */
+                text-align: center;
+                margin-bottom: 30px; /* Space below the heading */
+                font-weight: 700;
+                font-size: 2.2em;
             }
 
             p {
                 color: #555;
+                margin-bottom: 15px; /* Space between paragraphs */
+                font-size: 1.1em;
             }
 
             footer {
-                padding: 20px;
+                padding: 30px 20px;
                 text-align: center;
-                background-color: #f0f0f0;
+                background-color: #ecf0f1; /* Light gray background */
                 border-top: 1px solid #ddd;
+                margin-top: 40px; /* Space above the footer */
             }
 
             input[type="text"] {
-                padding: 8px;
+                padding: 12px 15px; /* More padding for better touch targets */
                 border: 1px solid #ccc;
-                border-radius: 4px;
-                margin-right: 10px;
+                border-radius: 5px; /* Slightly more rounded */
+                margin-right: 15px; /* More space */
+                width: 250px; /* Wider input field */
+                box-sizing: border-box; /* Include padding and border in the element's total width and height */
+                font-size: 1em;
             }
 
             button {
-                padding: 8px 15px;
-                background-color: dimgray;
+                padding: 12px 25px; /* More padding for a more substantial button */
+                background-color: #3498db; /* A vibrant blue for the button */
                 color: white;
                 border: none;
-                border-radius: 4px;
+                border-radius: 5px;
                 cursor: pointer;
+                font-size: 1em;
+                font-weight: 400;
+                transition: background-color 0.3s ease; /* Smooth transition for hover effect */
             }
 
             button:hover {
-                background-color: #555;
+                background-color: #2980b9; /* Darker blue on hover */
             }
 
             #result {
-                margin-top: 15px;
+                margin-top: 20px; /* More space above the result */
                 font-weight: bold;
                 color: #333;
+                font-size: 1.2em;
             }
-            
+
+            /* Responsive adjustments */
+            @media (max-width: 768px) {
+                main {
+                    margin: 20px auto;
+                    padding: 20px;
+                }
+
+                nav li {
+                    font-size: 1.3em;
+                }
+
+                input[type="text"] {
+                    width: calc(100% - 130px); /* Adjust width for smaller screens */
+                    margin-bottom: 15px; /* Add space below input on smaller screens */
+                    margin-right: 0; /* Remove right margin */
+                }
+
+                button {
+                    width: 100%; /* Full width button on smaller screens */
+                }
+
+                footer {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+            }
         </style>
         <script src="/js/utils/utils.js"></script>
         <script>
@@ -116,9 +164,9 @@
                         document.getElementById('result').textContent = '正解';
                         // Setting a cookie named 'yuki' with value 'True'
                         // and making it available across the site for 7 days.
-                        document.cookie = 'yuki=True; path=/; max-age=604800'; 
+                        document.cookie = 'yuki=True; path=/; max-age=604800';
                         // Redirecting to the root of the site after successful answer.
-                        location.replace('/'); 
+                        location.replace('/');
                     } else {
                         document.getElementById('result').textContent = '不正解'
                     }
@@ -127,7 +175,7 @@
         </script>
     </head>
     <body>
-            
+
         <header>
             <nav>
                 <ul>
@@ -135,7 +183,7 @@
                 </ul>
             </nav>
         </header>
-            
+
         <main>
             <h1>創世記 - 旧約聖書より</h1>
             <p>はじめに神は天と地とを創造された。</p>
@@ -147,7 +195,7 @@
         </main>
 
         <footer>
-            <input id="user_answer" type="text" placeholder="創世記はどこに載っていますか？" style="width: 155px;">
+            <input id="user_answer" type="text" placeholder="創世記はどこに載っていますか？">
             <button onclick="checkAnswer()">確かめる</button>
             <p id="result"></p>
         </footer>
