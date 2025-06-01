@@ -6,18 +6,7 @@ import datetime
 import random
 import os
 import subprocess
-from cache import cache
-import ast
-from fastapi import FastAPI, Depends
-from fastapi import Response, Cookie, Request
-from fastapi.responses import HTMLResponse, PlainTextResponse
-from fastapi.responses import RedirectResponse as redirect
-from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel
-from typing import Union
 
-app = Flask(__name__)
 
 # 3 => (3.0, 1.5) => (1.5, 1)
 max_api_wait_time = (1.5, 1)
@@ -387,73 +376,6 @@ def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie
         "proxy":proxy
     })
 
-
-@app.route('/high_quality_stream')
-def get_high_quality_stream():
-    """
-    指定された動画IDの高画質ストリームURLをyt-dlp経由で取得し、JSONで返します。
-    """
-    video_id = request.args.get('v') # クエリパラメータから動画IDを取得
-    if not video_id:
-        # 動画IDが提供されていない場合、エラーを返す
-        return jsonify({'error': 'Video ID is required'}), 400
-
-    try:
-        # yt-dlpのオプションを設定
-        ydl_opts = {
-            # mp4形式で最高のビデオとオーディオ（分離されている場合）を結合、
-            # もしくは結合済みのmp4で最高のものを選択
-            'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-            'noplaylist': True,           # プレイリストは無視
-            'youtube_include_dash_manifest': False, # DASHマニフェストを含めない
-            'quiet': True,                # コンソール出力を抑制
-            'skip_download': True,        # ダウンロードは行わない
-            'simulate': True,             # シミュレートモードでURLを取得
-            'geturl': True,               # URLのみを取得
-            # 'logger': None,             # ログ出力を完全に抑制したい場合
-            # 'verbose': False,           # 詳細な出力が不要な場合
-        }
-
-        # YoutubeDLを使って動画情報を抽出
-        # YouTubeの動画URLをyt-dlpに渡します。
-        # 'https://www.youtube.com/watch?v=' は、動画IDを正規のURL形式にするためのプレフィックスです。
-        with YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(f'https://www.youtube.com/watch?v={video_id}', download=False)
-
-            stream_url = None
-            # 'url'キーは`--get-url`オプションが使われた場合に、最も上位のフォーマットのURLを直接返します。
-            if 'url' in info:
-                stream_url = info['url']
-            elif 'formats' in info:
-                # 複数のフォーマットがある場合、最適なものを選ぶロジック
-                # 例: 1080pのmp4を探す
-                for f in info['formats']:
-                    if f.get('ext') == 'mp4' and f.get('height') == 1080:
-                        stream_url = f.get('url')
-                        break
-                if not stream_url:
-                    # 1080p mp4がなければ、mp4で動画と音声が結合されているものを探す
-                    for f in info['formats']:
-                        if f.get('ext') == 'mp4' and f.get('vcodec') != 'none' and f.get('acodec') != 'none':
-                            stream_url = f.get('url')
-                            break
-                if not stream_url and info['formats']:
-                    # それでもなければ、yt-dlpが選んだ最初の（通常はベストな）URLを使う
-                    stream_url = info['formats'][0].get('url')
-            else:
-                stream_url = None # URLが見つからない場合
-
-            if stream_url:
-                # URLが見つかった場合、JSONでURLを返す
-                return jsonify({'high_quality_stream_url': stream_url})
-            else:
-                # URLが見つからない場合、エラーを返す
-                return jsonify({'error': 'No high-quality stream URL found.'}), 404
-
-    except Exception as e:
-        # エラーが発生した場合、その詳細をログに出力し、エラーレスポンスを返す
-        print(f"Error getting high quality stream for video ID {video_id}: {e}")
-        return jsonify({'error': f'Failed to get high quality stream: {str(e)}'}), 500
 
 @app.get("/search", response_class=HTMLResponse)
 def search(q:str, response: Response, request: Request, page:Union[int, None]=1, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
