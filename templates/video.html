@@ -17,7 +17,36 @@
 
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src="/js/utils.js"></script>
+        <script>
+            // クエリパラメータから値を取得するヘルパー関数
+            function getQueryValue(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            // クッキーから値を取得するヘルパー関数
+            function getCookie(name) {
+                const nameEQ = name + "=";
+                const ca = document.cookie.split(';');
+                for(let i=0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+
+            // 秒数をHMS形式（時間:分:秒）に変換するヘルパー関数
+            function secToHMS(seconds) {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return [h, m, s]
+                    .map(v => v < 10 ? "0" + v : v) // 1桁の場合は先頭に0を追加
+                    .filter((v, i) => v !== "00" || i > 0) // 時間が00の場合は非表示
+                    .join(":");
+            }
+        </script>
     </head>
     <body class="no-theme">
         <span id="dark_mode_pref" style="display:none"></span>
