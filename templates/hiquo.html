@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
     <head>
@@ -17,7 +18,6 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="/js/utils/utils.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <!-- ブラウザによる早期読み込み用 -->
     <link rel="preload" as="audio" href="{{ audio_url }}">
     <style>  #audio {
         display: none;
@@ -30,8 +30,8 @@
         });
         
         // スクロールによるトップバーの縮小効果
-        $(window).on("scroll", function() {
-          if($(window).scrollTop() > 50) {
+        <span class="math-inline">\(window\)\.on\("scroll", function\(\) \{
+if\(</span>(window).scrollTop() > 50) {
             $("#top-bar").addClass("scrolled");
           } else {
             $("#top-bar").removeClass("scrolled");
@@ -57,8 +57,7 @@
 			</form>
     </div>
     
-  </header>
-	    <br>
+  </header> <br>
     <div class="no-theme">
       <span id="dark_mode_pref" style="display:none"></span>
       <div class="pure-g">
@@ -148,7 +147,6 @@
       </div>
     </div>
     
-    <!-- コメント読み込み・動画や音声に関する様々なイベントハンドラー -->
     <script>
       const xhr = new XMLHttpRequest();
       xhr.open("GET", "/comments?v=" + getQueryValue('v'));
@@ -356,8 +354,6 @@
         });
 });
     </script>
-     <!-- ウェイクロック周り -->
-
      <script>
        video.addEventListener('loadedmetadata', () => {
          video.play().catch(error => console.error("動画の再生エラー:", error));
@@ -393,13 +389,7 @@
       audio.play();
     });
   </script>
-     <!-- ▼以下、先ほど提示した「高速なAudio読み込み」の統合部分です -->
-    <!-- （中略）既存のHTMLコードや各種スクリプト -->
- 
- <!-- audioタグ。既存ではcontrolsとpreloadが設定されています --
-<!-- （中略）既存の他のスクリプト群など -->
-    <!-- 動画視聴ページの適当な場所に追加 -->
-<script>
+     <script>
 function addToHistory() {
   // サーバーサイドのテンプレートで動的に値を埋め込む
   const videoData = {
@@ -440,4 +430,4 @@ window.addEventListener('load', addToHistory);
 
     
   </body>
-</html>
+		</html>
