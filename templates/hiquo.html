@@ -7,12 +7,12 @@
         <title>{{ video_title }} New-Instance</title>
         <link rel="icon" href="/img/logo/favicon.ico">
 
-      
         <link rel="stylesheet" href="/css/pure-min.css">
         <link rel="stylesheet" href="/css/grids-responsive-min.css">
         <link rel="stylesheet" href="/css/ionicons.min.css">
         <link rel="stylesheet" href="/css/default.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=thumb_up" />
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+ <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=thumb_up" />
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="/js/utils/utils.js"></script>
@@ -40,7 +40,8 @@
       });
     </script>
   </head>
-<body class="no-theme">
+  <body>
+            <body class="no-theme">
         <span id="dark_mode_pref" style="display:none"></span>
         <div class="pure-g">
             <div class="pure-u-1 pure-u-md-2-24"></div>
@@ -54,7 +55,10 @@
                                 <input id="searchbox" name="q" type="search" placeholder="検索" value="" title="検索" autocomplete="on" autocorrect="on" autocapitalize="none" spellcheck="false" >
                             </fieldset>
 			</form>
-		    </div>
+    </div>
+    
+  </header>
+	    <br>
     <div class="no-theme">
       <span id="dark_mode_pref" style="display:none"></span>
       <div class="pure-g">
@@ -99,12 +103,12 @@
           <div class="pure-g">
             <div class="pure-u-1 pure-u-lg-1-5">
               <button id="restartBtn">音を合わせる</button><br>
-                <a href="{{ videourls[0] }}" download="{{ video_title }}">ダウンロード</a><br>
+             <a href="{{ videourls[0] }}" download="{{ video_title }}">ダウンロード</a><br>
                         <a href="javascript:{navigator.share({title: '現時点の動画を共有', text: '{{ video_title }}', url: location.origin + '/watch?v={{ videoid }}' + '&t=' + Math.floor(document.getElementById('player').currentTime)})}">現時点の動画を共有</a><br>
                         <a href="javascript:{navigator.share({title: '動画を共有', text: '{{ video_title }}', url: location.href})}">動画を共有</a><br>
                         <a href="#" id="toggle-embed-player">埋め込みで再生</a><br>
-                         <a href="javascript:location.replace('/watch?v={{ videoid }}')">VideoStreamUrlで表示</a><br>
-                        
+                       <a href="javascript:location.replace('/watch?v={{ videoid }}')">デフォルトで視聴する</a><br>
+              
               <hr>
             </div>
             <div class="pure-u-1 pure-u-lg-3-5">
