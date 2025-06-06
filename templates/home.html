@@ -18,6 +18,49 @@
         
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <style>
+            /* Basic styling for video display */
+            #popular-videos-container {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+                padding: 20px;
+                max-width: 1200px;
+                margin: 20px auto;
+            }
+            .video-item {
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .video-item img {
+                width: 100%;
+                height: 150px; /* Fixed height for thumbnails */
+                object-fit: cover;
+                display: block;
+            }
+            .video-item-info {
+                padding: 10px;
+            }
+            .video-item-info h3 {
+                font-size: 1em;
+                margin-top: 0;
+                margin-bottom: 5px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            .video-item-info p {
+                font-size: 0.85em;
+                color: #555;
+                margin-bottom: 0;
+            }
+            .video-item a {
+                text-decoration: none;
+                color: inherit;
+            }
+        </style>
     </head>
 
     <body class="no-theme">
@@ -52,6 +95,51 @@
                         xhr.send();
                     }
                 },delay:300
+            });
+        </script>
+
+        <div id="popular-videos-section">
+            <h2 style="text-align: center; margin-top: 40px;">人気の動画</h2>
+            <div id="popular-videos-container">
+                <p style="text-align: center;">動画を読み込み中...</p>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function() {
+                const invidiousInstance = 'https://lekker.gay'; // Make sure this is the correct Invidious instance
+
+                $.ajax({
+                    url: invidiousInstance + '/api/v1/trending?region=JP',
+                    method: 'GET',
+                    success: function(data) {
+                        const container = $('#popular-videos-container');
+                        container.empty(); // Clear "Loading videos..." message
+
+                        if (data && data.length > 0) {
+                            data.forEach(function(video) {
+                                const videoItem = `
+                                    <div class="video-item">
+                                        <a href="${invidiousInstance}/watch?v=${video.videoId}" target="_blank">
+                                            <img src="${video.videoThumbnails[0].url}" alt="${video.title} thumbnail">
+                                            <div class="video-item-info">
+                                                <h3>${video.title}</h3>
+                                                <p>${video.author}</p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                `;
+                                container.append(videoItem);
+                            });
+                        } else {
+                            container.html('<p style="text-align: center;">人気の動画が見つかりませんでした。</p>');
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("Error fetching popular videos:", textStatus, errorThrown);
+                        $('#popular-videos-container').html('<p style="text-align: center; color: red;">動画の読み込みに失敗しました。</p>');
+                    }
+                });
             });
         </script>
     </body>
