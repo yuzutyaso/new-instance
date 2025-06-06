@@ -110,17 +110,18 @@
                 const invidiousInstance = 'https://lekker.gay'; // Make sure this is the correct Invidious instance
 
                 $.ajax({
+                    // 人気動画のエンドポイントをtrendingに変更し、地域をJPに指定
                     url: invidiousInstance + '/api/v1/trending?region=JP',
                     method: 'GET',
                     success: function(data) {
                         const container = $('#popular-videos-container');
-                        container.empty(); // Clear "Loading videos..." message
+                        container.empty(); // "Loading videos..." メッセージをクリア
 
                         if (data && data.length > 0) {
                             data.forEach(function(video) {
                                 const videoItem = `
                                     <div class="video-item">
-                                        <a href="/watch?v=${video.videoId}" target="_blank">
+                                        <a href="/watch?v=${video.videoId}">
                                             <img src="${video.videoThumbnails[0].url}" alt="${video.title} thumbnail">
                                             <div class="video-item-info">
                                                 <h3>${video.title}</h3>
