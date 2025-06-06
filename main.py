@@ -399,7 +399,7 @@ def home(response: Response, request: Request, yuki: Union[str] = Cookie(None)):
     return redirect("/genesis")
 
 
-@app.get('/w', response_class=HTMLResponse)
+@app.get('/watch', response_class=HTMLResponse)
 def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
     # v: video_id
     if not(checkCookie(yuki)):
@@ -450,7 +450,7 @@ def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie
         "proxy":proxy
     })
 
-@app.get('/watch', response_class=HTMLResponse)
+@app.get('/w', response_class=HTMLResponse)
 def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
     # v: video_id
     if not(checkCookie(yuki)):
