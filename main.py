@@ -553,59 +553,346 @@ def suggest(keyword:str):
 def getSource(name):
     return requests.get(f'https://raw.githubusercontent.com/LunaKamituki/yuki-source/refs/heads/main/{name}.html', headers=getRandomUserAgent()).text
 
-@app.route('/bbs')
-def bbs():
-    return render_template('bbs.html')
 
 
 @cache(seconds=5)
 def getCachedBBSAPI(verify, channel):
     return requests.get(f"{url}bbs/api?t={urllib.parse.quote(str(int(time.time()*1000)))}&verify={urllib.parse.quote(verify)}&channel={urllib.parse.quote(channel)}", cookies={"yuki":"True"}).text
 
-@app.get("/bbs/api", response_class=HTMLResponse)
-def bbsAPI(request: Request, t: str, channel:Union[str, None]="main", verify: Union[str, None] = "false"):
-    return getCachedBBSAPI(verify, channel)
 
-@app.get("/bbs/result")
-def write_bbs(request: Request, name: str = "", message: str = "", seed:Union[str, None] = "", channel:Union[str, None]="main", verify:Union[str, None]="false", yuki: Union[str] = Cookie(None)):
-    if not(checkCookie(yuki)):
-        return redirect("/")
-    if 'Google-Apps-Script' in str(request.scope["headers"][1][1]):
-        raise UnallowedBot("GASのBotは許可されていません")
-      
-    params = {
-      'name': urllib.parse.quote(name),
-      'message': urllib.parse.quote(message),
-      'seed': urllib.parse.quote(seed),
-      'channel': urllib.parse.quote(channel),
-      'verify': urllib.parse.quote(verify),
-      'info': urllib.parse.quote(getInfo(request)),
-      'serververify': getVerifyCode()
-    }
-  
-    url_querys = ''
-    for key, value in params.items():
-      url_querys += f'{key}={value}&'
+@app.route('/bbs')
 
-    if url_querys != '':
-      url_querys = '?' + url_querys[:-1]
-      
-    t = requests.get(f"{url}bbs/result" + url_querys, cookies={"yuki": "True"}, allow_redirects=False)
-    if t.status_code != 307:
-        return HTMLResponse(no_robot_meta_tag + t.text.replace('AutoLink(xhr.responseText);', 'urlConvertToLink(xhr.responseText);') + getSource('bbs'))
-        
-    return redirect(f"/bbs?name={urllib.parse.quote(name)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}")
+def bbs_page():
 
-@cache(seconds=120)
-def getCachedBBSHow():
-    return requests.get(f"{url}bbs/how").text
+    # ここにあなたの掲示板HTMLコンテンツを直接記述するか、テンプレートファイルから読み込む
 
-@app.get("/bbs/how", response_class=PlainTextResponse)
-def view_commonds(request: Request, yuki: Union[str] = Cookie(None)):
-    if not(checkCookie(yuki)):
-        return redirect("/")
-    return getCachedBBSHow()
+    html_content = """
 
+    <!DOCTYPE html>
+
+    <html lang="ja">
+
+    <head>
+
+        <meta charset="UTF-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>掲示板</title>
+
+        <style>
+
+            /* あなたのCSSスタイル */
+
+            #goTowakameButton {
+
+                padding: 8px 18px;
+
+                font-size: 15px;
+
+                color: black;
+
+                background-color: #c0c0c0;
+
+                border: none;
+
+                border-radius: 5px;
+
+                cursor: pointer;
+
+                transition: background-color 0.3s ease;
+
+            }
+
+            #goTowakameButton:hover {
+
+                background-color: #a9a9a9;
+
+            }
+
+            textarea {
+
+                width: 50%;
+
+                height: 40px;
+
+                font-size: 10px;
+
+                padding: 8px;
+
+                line-height: 1.2;
+
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <button id="goTowakameButton">ホーム</button>
+
+        <h1>掲示板</h1>
+
+        <p>
+
+          新規さんへ、先ずは挨拶をしましょう。シード値は自分のidを決めるものでパスワードのようなものです。<br>
+
+          今の話題に勇気を出して参加してみましょう！！！<br>
+
+          メッセージが送れない場合メッセージや名前が規制されている可能性があります。<br>
+
+        </p>
+
+        <label for="channel">チャンネル</label>
+
+        <select name="channel" id="channel">
+
+          <option value="battle">バトスタ</option>
+
+          <option value="main">雑談</option>
+
+        </select>
+
+
+
+        <label for="verify">スピ限</label>
+
+        <input type="checkbox" id="verify" name="verify">
+
+        <br>
+
+        <label for="message">メッセージ</label>
+
+        <textarea id="message" name="message" placeholder="メッセージを入力" required></textarea>
+
+
+
+        <br>
+
+        <label for="name">名前</label>
+
+        <input type="text" id="name" name="name" placeholder="名前を入力" required>
+
+        <label for="seed">シード</label>
+
+        <input type="text" id="seed" name="seed" placeholder="シード(パスワード)" required>
+
+
+
+        <br>
+
+        <button type="button" id="send-button">メッセージ送信</button>
+
+
+
+        <div id="bbs-content">
+
+            <p>ここに掲示板の内容が表示されます</p>
+
+        </div>
+
+
+
+        <script>
+
+            // ★★★ ここをあなたのVercelプロジェクトの実際のURLに置き換えてください ★★★
+
+            const VERCEL_API_BASE_URL = 'https://bbs-zeta.vercel.app'; // 例: https://yukibbs-server-xxxx.vercel.app
+
+
+
+            document.getElementById('goTowakameButton').addEventListener('click', function() {
+
+                window.location.href = '/'; // アプリケーションのルートに遷移
+
+            });
+
+
+
+            function getCookie(name) {
+
+                const value = "; " + document.cookie;
+
+                const parts = value.split("; " + name + "=");
+
+                if (parts.length === 2) return parts.pop().split(";").shift();
+
+                return "";
+
+            }
+
+
+
+            function setCookie(name, value) {
+
+                document.cookie = `${name}=${value}; path=/`;
+
+            }
+
+
+
+            function btoaUnicode(str) {
+
+                return btoa(unescape(encodeURIComponent(str)));
+
+            }
+
+
+
+            async function fetchBBS() {
+
+                const channel = document.getElementById("channel").value;
+
+                const verify = document.getElementById("verify").checked ? "true" : "false";
+
+                const t = Date.now();
+
+
+
+                try {
+
+                    const response = await fetch(`${VERCEL_API_BASE_URL}/api?t=${t}&channel=${channel}&verify=${verify}`);
+
+                    const data = await response.text();
+
+                    document.getElementById("bbs-content").innerHTML = data;
+
+                } catch (error) {
+
+                    console.error("Error fetching BBS:", error);
+
+                    document.getElementById("bbs-content").innerHTML = "エラーが発生しました";
+
+                }
+
+            }
+
+
+
+            async function sendMessage(event) {
+
+                event.preventDefault();
+
+
+
+                const name = document.getElementById("name").value;
+
+                const message = document.getElementById("message").value;
+
+                const seed = document.getElementById("seed").value;
+
+                const channel = document.getElementById("channel").value;
+
+                const verify = document.getElementById("verify").checked ? "true" : "false";
+
+
+
+                if (!name || !seed || !message) {
+
+                    alert("名前、Seed、メッセージは必須です！");
+
+                    return;
+
+                }
+
+
+
+                setCookie("name", name);
+
+                setCookie("seed", seed);
+
+                setCookie("channel", channel);
+
+
+
+                const base64Message = btoaUnicode(message);
+
+
+
+                try {
+
+                    await fetch(`${VERCEL_API_BASE_URL}/api/result?name=${encodeURIComponent(name)}&message=${encodeURIComponent(base64Message)}&seed=${encodeURIComponent(seed)}&channel=${encodeURIComponent(channel)}&verify=${encodeURIComponent(verify)}`, {
+
+                        method: 'GET'
+
+                    });
+
+                    fetchBBS();
+
+                    document.getElementById("message").value = "";
+
+                } catch (error) {
+
+                    console.error("Error sending message:", error);
+
+                    document.getElementById("bbs-content").innerHTML = "メッセージ送信に失敗しました";
+
+                }
+
+            }
+
+
+
+            window.onload = function() {
+
+                const savedName = getCookie("name");
+
+                const savedSeed = getCookie("seed");
+
+                const savedChannel = getCookie("channel");
+
+
+
+                if (savedName) {
+
+                    document.getElementById("name").value = savedName;
+
+                }
+
+                if (savedSeed) {
+
+                    document.getElementById("seed").value = savedSeed;
+
+                }
+
+                if (savedChannel) {
+
+                    document.getElementById("channel").value = savedChannel;
+
+                }
+
+
+
+                fetchBBS();
+
+                setInterval(fetchBBS, 5000);
+
+            };
+
+
+
+            document.addEventListener("DOMContentLoaded", function() {
+
+                document.getElementById("channel").addEventListener("change", function() {
+
+                    setCookie("channel", this.value);
+
+                    fetchBBS();
+
+                });
+
+                document.getElementById("send-button").addEventListener("click", sendMessage);
+
+            });
+
+        </script>
+
+    </body>
+
+    </html>
+
+    return render_template_string(html_content)
 
 
 @app.get("/info", response_class=HTMLResponse)
