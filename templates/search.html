@@ -16,9 +16,11 @@
         <style>
             /* すべてのサムネイルの共通スタイル */
             .thumbnail {
+                border: 1px solid #ddd; /* 薄いグレーの枠線を追加 */
                 border-radius: 8px; /* 角を丸くする */
                 overflow: hidden; /* 角丸からはみ出るコンテンツを隠す */
                 position: relative; /* 長さ表示の配置用 */
+                box-sizing: border-box; /* パディングとボーダーを幅に含める */
             }
 
             .thumbnail img {
@@ -40,14 +42,15 @@
             }
 
             /* チャンネルアイコンのスタイル (丸くする) */
-            /* このセレクタは、チャンネル画像の親要素のクラス名や構造に合わせて調整が必要かもしれません。 */
-            /* 例: .channel-result .channel-image など */
-            .pure-u-1.pure-u-md-1-4 .h-box a img { /* 現在のHTML構造に基づいたセレクタ */
+            /* 現在のHTML構造に基づいたセレクタ */
+            .pure-u-1.pure-u-md-1-4 .h-box a img {
                 border-radius: 50%; /* 完全な円形にする */
                 width: 60%; /* 幅を調整 */
                 height: auto;
                 display: block;
                 margin: 0 auto 10px auto; /* 中央揃えと下部の余白 */
+                border: 1px solid #ddd; /* チャンネルアイコンにも枠線を追加する場合 */
+                box-sizing: border-box;
             }
 
             /* 動画のタイトルとチャンネル名のレイアウト */
@@ -96,8 +99,8 @@
                             {% if result["type"] == "video" %}
                                 
                             <a href="/watch?v={{ result['id'] }}" style="width:100%">
-                                <div class="thumbnail"> {# ここにthumbnailクラスを追加 #}
-                                    <img class="thumbnail" loading="lazy" src="{% if proxy == 'True' %}/thumbnail?v={{ result['id'] }}{% else %}https://img.youtube.com/vi/{{ result['id'] }}/0.jpg{% endif %}" onerror="document.cookie = 'proxy=True;max-age=2592000;';">
+                                <div class="thumbnail"> {# 動画のサムネイルの枠と角丸を設定するdiv #}
+                                    <img loading="lazy" src="{% if proxy == 'True' %}/thumbnail?v={{ result['id'] }}{% else %}https://img.youtube.com/vi/{{ result['id'] }}/0.jpg{% endif %}" onerror="document.cookie = 'proxy=True;max-age=2592000;';">
                                     <p class="length">{{ result["length"] }}</p>
                                 </div>
                                 <p dir="auto">{{ result['title'] }}</p>
@@ -126,9 +129,9 @@
                             {% elif result["type"] == "playlist" %}
                             <a style="width: 100%;" href="/playlist?list={{ result["id"] }}">
                 
-                                <div class="thumbnail"> {# ここにthumbnailクラスを追加 #}
+                                <div class="thumbnail"> {# プレイリストのサムネイルの枠と角丸を設定するdiv #}
 
-                                    <img loading="lazy" tabindex="-1" class="thumbnail" src="{{ result['thumbnail'] }}">
+                                    <img loading="lazy" tabindex="-1" src="{{ result['thumbnail'] }}">
                                     
                                     <p class="length">{{ result["count"] }}個の動画</p>
                                 </div>
