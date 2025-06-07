@@ -12,7 +12,65 @@
         <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"/>
         <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    </head>
+
+        <style>
+            /* すべてのサムネイルの共通スタイル */
+            .thumbnail {
+                border-radius: 8px; /* 角を丸くする */
+                overflow: hidden; /* 角丸からはみ出るコンテンツを隠す */
+                position: relative; /* 長さ表示の配置用 */
+            }
+
+            .thumbnail img {
+                width: 100%; /* 親要素の幅に合わせる */
+                height: auto; /* アスペクト比を維持 */
+                display: block; /* 不要な下部の隙間をなくす */
+            }
+
+            /* 動画の長さ表示のスタイル */
+            .length {
+                position: absolute;
+                bottom: 8px;
+                right: 8px;
+                background-color: rgba(0, 0, 0, 0.7); /* 半透明の背景 */
+                color: white;
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 0.8em;
+            }
+
+            /* チャンネルアイコンのスタイル (丸くする) */
+            /* このセレクタは、チャンネル画像の親要素のクラス名や構造に合わせて調整が必要かもしれません。 */
+            /* 例: .channel-result .channel-image など */
+            .pure-u-1.pure-u-md-1-4 .h-box a img { /* 現在のHTML構造に基づいたセレクタ */
+                border-radius: 50%; /* 完全な円形にする */
+                width: 60%; /* 幅を調整 */
+                height: auto;
+                display: block;
+                margin: 0 auto 10px auto; /* 中央揃えと下部の余白 */
+            }
+
+            /* 動画のタイトルとチャンネル名のレイアウト */
+            .video-card-row {
+                margin-top: 5px; /* 上部の余白 */
+            }
+
+            .video-card-row a {
+                display: block; /* リンク全体をブロック要素にする */
+                margin-bottom: 3px; /* チャンネル名とデータの間隔 */
+            }
+
+            .video-card-row .flex-left {
+                display: flex; /* ビュー数と公開日の横並び */
+                gap: 10px; /* 要素間のスペース */
+            }
+
+            .video-data {
+                font-size: 0.9em;
+                color: #606060; /* 少し薄い色 */
+            }
+        </style>
+        </head>
     <body class="no-theme">
         <span id="dark_mode_pref" style="display: none;"></span>
         <div class="pure-g">
@@ -38,7 +96,7 @@
                             {% if result["type"] == "video" %}
                                 
                             <a href="/watch?v={{ result['id'] }}" style="width:100%">
-                                <div class="thumbnail">
+                                <div class="thumbnail"> {# ここにthumbnailクラスを追加 #}
                                     <img class="thumbnail" loading="lazy" src="{% if proxy == 'True' %}/thumbnail?v={{ result['id'] }}{% else %}https://img.youtube.com/vi/{{ result['id'] }}/0.jpg{% endif %}" onerror="document.cookie = 'proxy=True;max-age=2592000;';">
                                     <p class="length">{{ result["length"] }}</p>
                                 </div>
@@ -59,6 +117,7 @@
                             {% elif result["type"] == "channel" %}
                             <a href="/channel/{{ result["id"] }}">
                                 <center>
+                                    {# チャンネルアイコンを丸くするためのスタイルが適用される画像 #}
                                     <img loading="lazy" tabindex="-1" style="width:56.25%" src="{{ result["thumbnail"] }}">
                                 </center>
                                 <p dir="auto">{{ result["author"] }}</p>
@@ -67,7 +126,7 @@
                             {% elif result["type"] == "playlist" %}
                             <a style="width: 100%;" href="/playlist?list={{ result["id"] }}">
                 
-                                <div class="thumbnail">
+                                <div class="thumbnail"> {# ここにthumbnailクラスを追加 #}
 
                                     <img loading="lazy" tabindex="-1" class="thumbnail" src="{{ result['thumbnail'] }}">
                                     
