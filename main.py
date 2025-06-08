@@ -9,9 +9,6 @@ import subprocess
 from cache import cache
 
 import ast
-
-import threading
-
 # 3 => (3.0, 1.5) => (1.5, 1)
 max_api_wait_time = (3.0, 1.5)
 # 10 => 10
@@ -371,69 +368,22 @@ def getVerifyCode():
         print(f"getVerifyCode__Error: {e}")
         return None
 
+
 def fetch_data_from_api():
-
-    """
-
-    APIからデータを取得し、bbs_dataを更新する関数
-
-    """
-
     global bbs_data, last_fetch_time
-
     try:
-
         response = requests.get("https://yuyuyu-made-bbs.onrender.com/api")
-
-        response.raise_for_status()  # HTTPエラーがあれば例外を発生させる
-
+        response.raise_for_status() 
         data = response.json()
-
         bbs_data = data
-
         last_fetch_time = time.time()
-
         print("APIからデータを正常に取得しました。")
-
     except requests.exceptions.RequestException as e:
-
         print(f"APIからのデータ取得中にエラーが発生しました: {e}")
-
     except json.JSONDecodeError as e:
-
         print(f"APIレスポンスのJSONデコード中にエラーが発生しました: {e}")
 
 
-
-def periodic_fetch():
-
-    """
-
-    定期的にAPIからデータを取得するスレッド関数
-
-    """
-
-    while True:
-
-        fetch_data_from_api()
-
-        time.sleep(10) # 10秒ごとにデータを取得
-
-
-
-# アプリケーション起動時に初回データ取得と定期実行スレッドを開始
-
-# スレッドはアプリケーションが停止するまでバックグラウンドで実行され続けます
-
-thread = threading.Thread(target=periodic_fetch, daemon=True)
-
-thread.start()
-
-
-
-
-
-from flask import Flask, render_template
 
 from fastapi import FastAPI, Depends
 from fastapi import Response, Cookie, Request
@@ -464,22 +414,11 @@ def home(response: Response, request: Request, yuki: Union[str] = Cookie(None)):
         return template("home.html", {"request": request})
     print(checkCookie(yuki))
     return redirect("/genesis")
+  
 @app.route("/bbs")
-
 def bbs():
-
-    """
-
-    /bbsルートにアクセスがあった際に、取得したデータをHTMLで表示する
-
-    """
-
     return render_template("bbs.html", bbs_data=bbs_data)
-
-
-
-
-
+  
 @app.get('/watch', response_class=HTMLResponse)
 def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
     # v: video_id
