@@ -61,7 +61,6 @@ class InvidiousAPI:
         
 invidious_api = InvidiousAPI()
 
-url = requests.get('https://raw.githubusercontent.com/mochidukiyukimi/yuki-youtube-instance/main/instance.txt', headers=getRandomUserAgent()).text.rstrip()
 
 version = "1.0"
 new_instance_version = "1.3.2"
