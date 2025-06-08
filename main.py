@@ -366,7 +366,7 @@ def getVerifyCode():
         return None
 
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, Form
 from fastapi import Response, Cookie, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse
 from fastapi.responses import RedirectResponse as redirect
@@ -374,6 +374,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from typing import Union
+from fastapi import Form
 
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
