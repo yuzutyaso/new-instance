@@ -366,22 +366,6 @@ def getVerifyCode():
         return None
 
 
-def fetch_data_from_api():
-    global bbs_data, last_fetch_time
-    try:
-        response = requests.get("https://yuyuyu-made-bbs.onrender.com/api")
-        response.raise_for_status() 
-        data = response.json()
-        bbs_data = data
-        last_fetch_time = time.time()
-        print("APIからデータを正常に取得しました。")
-    except requests.exceptions.RequestException as e:
-        print(f"APIからのデータ取得中にエラーが発生しました: {e}")
-    except json.JSONDecodeError as e:
-        print(f"APIレスポンスのJSONデコード中にエラーが発生しました: {e}")
-
-
-
 from fastapi import FastAPI, Depends
 from fastapi import Response, Cookie, Request
 from fastapi.responses import HTMLResponse, PlainTextResponse
@@ -396,7 +380,7 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 app.mount("/js", StaticFiles(directory="./statics/js"), name="static")
 app.mount("/css", StaticFiles(directory="./statics/css"), name="static")
 app.mount("/img", StaticFiles(directory="./statics/img"), name="static")
-app.mount("/genesis", StaticFiles(directory="./blog", html=True), name="static")
+app.mount("/info", StaticFiles(directory="./blog", html=True), name="static")
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 from fastapi.templating import Jinja2Templates
@@ -410,7 +394,7 @@ def home(response: Response, request: Request, yuki: Union[str] = Cookie(None)):
         response.set_cookie("yuki", "True", max_age=60 * 60 * 24 * 7)
         return template("home.html", {"request": request})
     print(checkCookie(yuki))
-    return redirect("/genesis")
+    return redirect("/info")
   
   @app.get('/watch', response_class=HTMLResponse)
 def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
