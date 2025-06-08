@@ -14,9 +14,6 @@ max_api_wait_time = (3.0, 1.5)
 # 10 => 10
 max_time = 10
 
-bbs_data = {"topic": "読み込み中...", "posts": []}
-last_fetch_time = 0
-
 
 user_agents = [
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.6 Safari/605.1.15',
@@ -415,41 +412,6 @@ def home(response: Response, request: Request, yuki: Union[str] = Cookie(None)):
     print(checkCookie(yuki))
     return redirect("/genesis")
   
-@app.get("/bbs", response_class=HTMLResponse)
-def view_bbs(request: Request, name: Union[str, None] = "", seed:Union[str, None]="", channel:Union[str, None]="main", verify:Union[str, None]="false", yuki: Union[str] = Cookie(None)):
-    if not(check_cokie(yuki)):
-        return redirect("/")
-    res = HTMLResponse(requests.get(f"{url}bbs?name={urllib.parse.quote(name)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}", cookies={"yuki":"True"}).text + getSource('bbs_1') + getSource('shortcut_help') + getSource('bbs_2') + getSource('bbs_5'))
-    return res
-
-@cache(seconds=5)
-def bbsapi_cached(verify, channel):
-    return requests.get(f"{url}bbs/api?t={urllib.parse.quote(str(int(time.time()*1000)))}&verify={urllib.parse.quote(verify)}&channel={urllib.parse.quote(channel)}", cookies={"yuki":"True"}).text
-
-@app.get("/bbs/api", response_class=HTMLResponse)
-def view_bbs(request: Request, t: str, channel:Union[str, None]="main", verify: Union[str, None] = "false"):
-    # print(f"{url}bbs/api?t={urllib.parse.quote(t)}&verify={urllib.parse.quote(verify)}&channel={urllib.parse.quote(channel)}")
-    return bbsapi_cached(verify, channel)
-
-@app.get("/bbs/result")
-def write_bbs(request: Request, name: str = "", message: str = "", seed:Union[str, None] = "", channel:Union[str, None]="main", verify:Union[str, None]="false", yuki: Union[str] = Cookie(None)):
-    if not(check_cokie(yuki)):
-        return redirect("/")
-    t = requests.get(f"{url}bbs/result?name={urllib.parse.quote(name)}&message={urllib.parse.quote(message)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}&info={urllib.parse.quote(get_info(request))}&serververify={get_verifycode()}", cookies={"yuki":"True"}, allow_redirects=False)
-    if t.status_code != 307:
-        return HTMLResponse(t.text + getSource('bbs_1') + getSource('shortcut_help') + getSource('bbs_2') + getSource('bbs_5'))
-        
-    return redirect(f"/bbs?name={urllib.parse.quote(name)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}")
-
-@cache(seconds=60)
-def how_cached():
-    return requests.get(f"{url}bbs/how").text
-
-@app.get("/bbs/how", response_class=PlainTextResponse)
-def view_commonds(request: Request, yuki: Union[str] = Cookie(None)):
-    if not(check_cokie(yuki)):
-        return redirect("/")
-    return how_cached()
   @app.get('/watch', response_class=HTMLResponse)
 def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
     # v: video_id
