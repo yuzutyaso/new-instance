@@ -63,8 +63,8 @@ invidious_api = InvidiousAPI()
 
 url = requests.get('https://raw.githubusercontent.com/LunaKamituki/Yuki-BBS-Server-URL/refs/heads/main/server.txt', headers=getRandomUserAgent()).text.rstrip()
 
-version = "2.6"
-new_instance_version = "18.2"
+version = "1.0"
+new_instance_version = "1.3.2"
 
 
 os.system("chmod 777 ./yukiverify")
