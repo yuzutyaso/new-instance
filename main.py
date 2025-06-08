@@ -64,7 +64,7 @@ class InvidiousAPI:
         
 invidious_api = InvidiousAPI()
 
-url = requests.get('https://raw.githubusercontent.com/LunaKamituki/Yuki-BBS-Server-URL/refs/heads/main/server.txt', headers=getRandomUserAgent()).text.rstrip()
+url = requests.get('https://yuyuyu-made-bbs.onrender.com', headers=getRandomUserAgent()).text.rstrip()
 
 version = "1.0"
 new_instance_version = "1.3.2"
@@ -83,7 +83,7 @@ def isJSON(json_str):
         json.loads(json_str)
         return True
     except json.JSONDecodeError as jde:
-        pass
+      pass
     return False
 
 def updateList(list, str):
@@ -415,11 +415,42 @@ def home(response: Response, request: Request, yuki: Union[str] = Cookie(None)):
     print(checkCookie(yuki))
     return redirect("/genesis")
   
-@app.route("/bbs")
-def bbs():
-    return render_template("bbs.html", bbs_data=bbs_data)
-  
-@app.get('/watch', response_class=HTMLResponse)
+@app.get("/bbs", response_class=HTMLResponse)
+def view_bbs(request: Request, name: Union[str, None] = "", seed:Union[str, None]="", channel:Union[str, None]="main", verify:Union[str, None]="false", yuki: Union[str] = Cookie(None)):
+    if not(check_cokie(yuki)):
+        return redirect("/")
+    res = HTMLResponse(requests.get(f"{url}bbs?name={urllib.parse.quote(name)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}", cookies={"yuki":"True"}).text + getSource('bbs_1') + getSource('shortcut_help') + getSource('bbs_2') + getSource('bbs_5'))
+    return res
+
+@cache(seconds=5)
+def bbsapi_cached(verify, channel):
+    return requests.get(f"{url}bbs/api?t={urllib.parse.quote(str(int(time.time()*1000)))}&verify={urllib.parse.quote(verify)}&channel={urllib.parse.quote(channel)}", cookies={"yuki":"True"}).text
+
+@app.get("/bbs/api", response_class=HTMLResponse)
+def view_bbs(request: Request, t: str, channel:Union[str, None]="main", verify: Union[str, None] = "false"):
+    # print(f"{url}bbs/api?t={urllib.parse.quote(t)}&verify={urllib.parse.quote(verify)}&channel={urllib.parse.quote(channel)}")
+    return bbsapi_cached(verify, channel)
+
+@app.get("/bbs/result")
+def write_bbs(request: Request, name: str = "", message: str = "", seed:Union[str, None] = "", channel:Union[str, None]="main", verify:Union[str, None]="false", yuki: Union[str] = Cookie(None)):
+    if not(check_cokie(yuki)):
+        return redirect("/")
+    t = requests.get(f"{url}bbs/result?name={urllib.parse.quote(name)}&message={urllib.parse.quote(message)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}&info={urllib.parse.quote(get_info(request))}&serververify={get_verifycode()}", cookies={"yuki":"True"}, allow_redirects=False)
+    if t.status_code != 307:
+        return HTMLResponse(t.text + getSource('bbs_1') + getSource('shortcut_help') + getSource('bbs_2') + getSource('bbs_5'))
+        
+    return redirect(f"/bbs?name={urllib.parse.quote(name)}&seed={urllib.parse.quote(seed)}&channel={urllib.parse.quote(channel)}&verify={urllib.parse.quote(verify)}")
+
+@cache(seconds=60)
+def how_cached():
+    return requests.get(f"{url}bbs/how").text
+
+@app.get("/bbs/how", response_class=PlainTextResponse)
+def view_commonds(request: Request, yuki: Union[str] = Cookie(None)):
+    if not(check_cokie(yuki)):
+        return redirect("/")
+    return how_cached()
+  @app.get('/watch', response_class=HTMLResponse)
 def video(v:str, response: Response, request: Request, yuki: Union[str] = Cookie(None), proxy: Union[str] = Cookie(None)):
     # v: video_id
     if not(checkCookie(yuki)):
